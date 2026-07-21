@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전 차종 가격 &amp; 프로모션 | 벤츠 송파전시장 전태규</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#000000; --charcoal:#0C0C0D; --panel:#18191B; --panel-2:#1F2022;
+    --line:#2B2D30; --silver:#B7BBC0; --silver-bright:#E3E5E7; --white:#FAFAFA; --muted:#8B9096;
+    --gold:#C7A868; --gold-bright:#E4CD9C; --gold-dim:rgba(199,168,104,0.28);
+    --radius:3px; --maxw:1180px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--black); color:var(--white); font-family:'Inter',sans-serif; line-height:1.6;}
+  a{color:inherit; text-decoration:none;}
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 24px;}
+  h1,h2,h3{font-family:'Barlow Condensed', sans-serif; font-weight:600;}
+  .eyebrow{font-family:'Barlow',sans-serif; font-size:12px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold-bright); display:flex; align-items:center; gap:10px;}
+  .eyebrow::before{content:""; width:20px; height:1px; background:var(--gold);}
+  .hairline{height:1px; background:var(--line);}
+  header{position:sticky; top:0; z-index:10; background:rgba(0,0,0,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);}
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:16px 24px; max-width:var(--maxw); margin:0 auto;}
+  .logo{font-family:'Barlow Condensed',sans-serif; font-weight:600; font-size:18px;}
+  .logo span{display:block; font-size:11px; color:var(--muted); letter-spacing:.08em; font-weight:400;}
+  .btn{font-family:'Barlow',sans-serif; font-weight:600; font-size:13.5px; padding:9px 16px; border:1px solid var(--line); border-radius:var(--radius); display:inline-flex; align-items:center; gap:6px;}
+  .btn-ghost{background:transparent; color:var(--white);}
+  .btn-solid{background:linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#1a1305; border-color:var(--gold);}
+  .hero{padding:60px 24px 36px; text-align:center; border-bottom:1px solid var(--line);}
+  .hero h1{font-size:clamp(28px,4.5vw,44px);}
+  .hero p{color:var(--muted); margin-top:12px; font-size:14.5px;}
+  .price-toggle{display:inline-flex; gap:4px; margin-top:22px; padding:4px; border:1px solid var(--line); border-radius:24px; background:var(--panel);}
+  .toggle-btn{font-family:'Barlow',sans-serif; font-size:12.5px; font-weight:600; padding:8px 16px; border:none; border-radius:20px; background:transparent; color:var(--muted); cursor:pointer; transition:.2s;}
+  .toggle-btn.active{background:linear-gradient(135deg, var(--gold-bright), var(--gold)); color:#1a1305;}
+  section{padding:48px 0;}
+
+  /* ===== FILTER ===== */
+  .filter-bar{display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-bottom:36px;}
+  .filter-btn{
+    font-family:'Barlow',sans-serif; font-size:13px; font-weight:600; padding:9px 18px;
+    border:1px solid var(--line); border-radius:20px; background:transparent; color:var(--silver); cursor:pointer; transition:.2s;
+  }
+  .filter-btn:hover{border-color:var(--gold-dim);}
+  .filter-btn.active{background:var(--gold-bright); color:#1a1305; border-color:var(--gold-bright);}
+
+  /* ===== VEHICLE CARDS ===== */
+  .veh-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .veh-card{background:var(--charcoal); padding:24px 24px 22px; position:relative;}
+  .veh-card.mbm{background:linear-gradient(180deg, rgba(199,168,104,0.07), var(--charcoal) 40%);}
+  .veh-badge{position:absolute; top:16px; right:16px; font-size:10px; font-family:'Barlow',sans-serif; letter-spacing:.05em; color:var(--gold-bright); border:1px solid var(--gold-dim); padding:3px 8px; border-radius:12px;}
+  .mbm-eyebrow-badge{display:inline-block; font-family:'Barlow',sans-serif; font-size:11.5px; font-weight:700; letter-spacing:.1em; color:#1a1305; background:linear-gradient(135deg, var(--gold-bright), var(--gold)); padding:6px 14px; border-radius:20px;}
+  .veh-name{font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:600; margin-bottom:2px; padding-right:60px;}
+  .veh-msrp{font-size:12px; color:var(--muted); text-decoration:line-through; margin-bottom:10px;}
+  .veh-discount{font-size:11.5px; color:var(--silver); margin-bottom:4px;}
+  .veh-discount b{color:var(--gold-bright);}
+  .veh-final{font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:700; color:var(--gold-bright); margin-top:6px;}
+  .veh-final span{font-size:11px; color:var(--muted); font-family:'Inter',sans-serif; font-weight:400; margin-left:6px;}
+  .veh-tax{font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:600; color:var(--silver-bright); margin-top:4px;}
+  .veh-tax span{font-size:10.5px; color:var(--muted); font-family:'Inter',sans-serif; font-weight:400; margin-left:6px;}
+  .veh-none{color:var(--muted); font-size:12px; margin-top:8px;}
+  @media (max-width:960px){.veh-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:640px){.veh-grid{grid-template-columns:1fr;}}
+
+  /* ===== FINANCE TABLE ===== */
+  .sec-head{max-width:680px; margin:0 auto 28px; text-align:center;}
+  .sec-head h2{font-size:clamp(24px,3.6vw,32px); margin-top:12px;}
+  .sec-head p{color:var(--muted); margin-top:10px; font-size:14px;}
+  .table-scroll{overflow-x:auto; border:1px solid var(--line); max-width:820px; margin:0 auto;}
+  table{border-collapse:collapse; width:100%; min-width:560px; font-size:13.5px;}
+  th,td{padding:11px 14px; border-bottom:1px solid var(--line); text-align:center;}
+  th{background:var(--panel); font-family:'Barlow',sans-serif; font-weight:600; color:var(--gold-bright); font-size:12.5px;}
+  td.zero{color:var(--gold-bright); font-weight:700;}
+  tr:hover td{background:var(--panel-2);}
+
+  /* ===== EXTRA CONDITIONS ===== */
+  .cond-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); max-width:960px; margin:0 auto;}
+  .cond-card{background:var(--charcoal); padding:20px 22px;}
+  .cond-pct{font-family:'Barlow Condensed',sans-serif; font-size:22px; color:var(--gold-bright); font-weight:700;}
+  .cond-title{font-size:13.5px; font-weight:600; margin:4px 0 4px;}
+  .cond-desc{font-size:12px; color:var(--muted); line-height:1.5;}
+  @media (max-width:860px){.cond-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:560px){.cond-grid{grid-template-columns:1fr;}}
+
+  .cta-bar{text-align:center; padding:20px; border:1px solid var(--line); border-radius:var(--radius); margin-top:36px;}
+  .cta-bar p{font-size:13.5px; color:var(--muted); margin-bottom:16px;}
+  .cta-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap;}
+  footer{padding:30px 0 100px; text-align:center;}
+  footer p{font-size:11px; color:var(--muted); line-height:1.8; max-width:680px; margin:0 auto;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="logo">MERCEDES-BENZ<span>송파전시장 · 전태규</span></div>
+    <a class="btn btn-solid" href="index.html">홈으로</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="eyebrow" style="justify-content:center">2026.07 Price &amp; Promotion</div>
+  <h1 style="margin-top:14px;">전 차종 가격 &amp; 프로모션</h1>
+  <p>메르세데스-벤츠 코리아 공식 정책 기준 · VAT 포함 · 트림 및 재고 상황에 따라 실제 견적과 차이가 있을 수 있습니다.</p>
+  <div class="price-toggle" id="priceToggle">
+    <button class="toggle-btn active" data-mode="normal">정상 통관 기준</button>
+    <button class="toggle-btn" data-mode="tax">7/1 이전 통관(개소세 인하)</button>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="mbm-eyebrow-badge">★ MBM 특별할인 대상</span>
+      <h2 style="margin-top:14px;">이 차종은 지금이 적기예요</h2>
+      <p>파이낸셜 · 모빌리티 조인트 캠페인이 중첩 적용되는 차종만 먼저 모았어요.</p>
+    </div>
+    <div class="veh-grid" id="mbmGrid"></div>
+  </div>
+</section>
+
+<div class="hairline"></div>
+
+<section>
+  <div class="wrap">
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-seg="all">전체</button>
+      <button class="filter-btn" data-seg="entry">A · CLA · GLA · GLB</button>
+      <button class="filter-btn" data-seg="sedan">C · E클래스</button>
+      <button class="filter-btn" data-seg="suv">GLC · GLE</button>
+      <button class="filter-btn" data-seg="flagship">S · GLS · G · Maybach</button>
+      <button class="filter-btn" data-seg="sport">CLE · SL · AMG GT</button>
+      <button class="filter-btn" data-seg="ev">전동화 EQ</button>
+    </div>
+    <div class="veh-grid" id="vehGrid"></div>
+  </div>
+</section>
+
+<div class="hairline"></div>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow" style="justify-content:center">Extra Conditions</div>
+      <h2>공통 추가할인 조건</h2>
+      <p>아래 조건 충족 시 위 실구매가에서 추가로 차감됩니다 (항목별 중복 가능, 일부는 택1)</p>
+    </div>
+    <div class="cond-grid">
+      <div class="cond-card"><div class="cond-pct">+2%</div><div class="cond-title">벤츠코리아 MOU 임직원 할인</div><div class="cond-desc">MOU 체결 기업 임직원 본인·가족 명의 구매 시</div></div>
+      <div class="cond-card"><div class="cond-pct">+2%</div><div class="cond-title">TEV+ 법인 추가할인</div><div class="cond-desc">AMG · Maybach · S클래스 · GLS 한정, 법인 명의 구매 시</div></div>
+      <div class="cond-card"><div class="cond-pct">+1~2%</div><div class="cond-title">재구매 (Cash Retention)</div><div class="cond-desc">기존 벤츠 보유 고객 · AMG/S/G/Maybach +2%, 그 외 +1%</div></div>
+      <div class="cond-card"><div class="cond-pct">+1%</div><div class="cond-title">중고차 동시 매각</div><div class="cond-desc">재구매 할인에 추가 중첩 가능, Conquest와는 택1</div></div>
+      <div class="cond-card"><div class="cond-pct">+1%</div><div class="cond-title">타브랜드 보유 (Conquest)</div><div class="cond-desc">GLC · GLE 한정, BMW/Audi/Genesis/Volvo/Porsche/Land Rover</div></div>
+      <div class="cond-card"><div class="cond-pct">+1%</div><div class="cond-title">전시차 (Display Car)</div><div class="cond-desc">전시 30일 경과 차량, 즉시 출고 가능</div></div>
+    </div>
+    <div class="cta-bar">
+      <p>정확한 실구매가와 내 조건에 맞는 추가할인은 전태규 과장이 직접 계산해서 안내해 드려요.</p>
+      <div class="cta-actions">
+        <a class="btn btn-solid" href="index.html#inquiry">상담 신청하기</a>
+        <a class="btn btn-ghost" href="https://open.kakao.com/o/sIpxpFjc" target="_blank" rel="noopener">카카오톡으로 문의</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>
+      본 페이지는 2026년 7월 메르세데스-벤츠 코리아 공식 프로모션 정책을 기준으로 하며, 표시 가격은 VAT 포함 · 만원 단위 절삭입니다.<br>
+      "개소세 인하 적용가"는 7월 1일 이전 통관 완료된 재고 차량 한정으로, 개소세 탄력세율 종료에 따른 인상폭만큼 추가 할인이 적용된 실질 구매가입니다. 재고 문의 시 통관일 기준 확인이 필요합니다.<br>
+      기본 할인이 표기되지 않은 모델은 별도 프로모션이 없는 정가 기준이며, 실제 견적은 옵션 · 재고 · 결제 방식에 따라 달라질 수 있습니다.<br>
+      담당 : 전태규 과장 · 010-6233-0311 · <a href="index.html" style="color:var(--gold-bright);">홈으로 돌아가기</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+  // ====================================================================
+  // 차량 데이터: price(정가) / disc(기본할인%) / mbm(MBM 특별 추가할인%)
+  // ====================================================================
+  const vehicles = [
+    // A-Class / CLA / GLA / GLB (entry)
+    {seg:'entry', name:'A 220 Hatch', price:48700000, disc:10, mbm:0, hike:600000},
+    {seg:'entry', name:'A 220 Sedan', price:50500000, disc:5, mbm:0, hike:600000},
+    {seg:'entry', name:'AMG A 45 S 4MATIC+', price:81400000, disc:7, mbm:4, hike:1000000},
+    {seg:'entry', name:'AMG A 35 4MATIC', price:67700000, disc:0, mbm:0, hike:900000},
+    {seg:'entry', name:'CLA 250 4MATIC AMG Line', price:64500000, disc:7, mbm:0, hike:800000},
+    {seg:'entry', name:'AMG CLA 45 S 4MATIC+', price:91800000, disc:5, mbm:0, hike:1200000},
+    {seg:'entry', name:'GLA 250 4MATIC AMG Line', price:70000000, disc:9, mbm:4, hike:900000},
+    {seg:'entry', name:'GLB 200 d', price:64300000, disc:0, mbm:0, hike:1000000},
+    {seg:'entry', name:'GLB 250 4MATIC', price:72000000, disc:9, mbm:4, hike:900000},
+    {seg:'entry', name:'AMG GLB 35 4MATIC', price:79500000, disc:9, mbm:4, hike:1000000},
+
+    // C / E-Class (sedan)
+    {seg:'sedan', name:'C 200 AVANTGARDE', price:65100000, disc:10, mbm:4, hike:800000},
+    {seg:'sedan', name:'C 200 AMG Line', price:68300000, disc:10, mbm:4, hike:800000},
+    {seg:'sedan', name:'E 200 AVANTGARDE', price:77500000, disc:16, mbm:0, hike:1000000},
+    {seg:'sedan', name:'E 200 EXCLUSIVE', price:77500000, disc:4, mbm:7, hike:900000},
+    {seg:'sedan', name:'E 200 AMG Line', price:81000000, disc:10, mbm:4, hike:1000000},
+    {seg:'sedan', name:'E 220 d 4MATIC EXCLUSIVE', price:87200000, disc:9, mbm:0, hike:1100000},
+    {seg:'sedan', name:'E 300 4MATIC EXCLUSIVE', price:94800000, disc:10, mbm:4, hike:1200000},
+    {seg:'sedan', name:'E 300 4MATIC AMG Line', price:99000000, disc:10, mbm:4, hike:1300000},
+    {seg:'sedan', name:'E 350 e 4MATIC EXCLUSIVE', price:100000000, disc:11, mbm:0, hike:1300000},
+    {seg:'sedan', name:'E 450 4MATIC AMG Line', price:116000000, disc:11, mbm:0, hike:1400000},
+    {seg:'sedan', name:'E 450 4MATIC EXCLUSIVE', price:129600000, disc:11, mbm:0, hike:1400000},
+    {seg:'sedan', name:'AMG E 53 Hybrid 4MATIC+', price:143000000, disc:10, mbm:0, hike:1400000},
+
+    // GLC / GLE (suv)
+    {seg:'suv', name:'GLC 220 d 4MATIC', price:82200000, disc:7, mbm:0, hike:1000000},
+    {seg:'suv', name:'GLC 300 4MATIC AVANTGARDE', price:82500000, disc:8, mbm:4, hike:1100000},
+    {seg:'suv', name:'GLC 300 4MATIC AMG Line', price:92500000, disc:12, mbm:0, hike:1100000},
+    {seg:'suv', name:'GLC 300 4MATIC Coupe AVANTGARDE', price:86600000, disc:8, mbm:4, hike:1100000},
+    {seg:'suv', name:'GLC 300 4MATIC Coupe AMG Line', price:96900000, disc:9, mbm:0, hike:1200000},
+    {seg:'suv', name:'AMG GLC 43 4MATIC', price:103600000, disc:7, mbm:0, hike:1300000},
+    {seg:'suv', name:'AMG GLC 43 4MATIC Coupe', price:108300000, disc:3, mbm:0, hike:1400000},
+    {seg:'suv', name:'GLE 350 4MATIC', price:118000000, disc:10, mbm:0, hike:1400000},
+    {seg:'suv', name:'GLE 300 d 4MATIC', price:119200000, disc:8, mbm:0, hike:1400000},
+    {seg:'suv', name:'GLE 450 4MATIC', price:129000000, disc:13, mbm:4, hike:1400000},
+    {seg:'suv', name:'GLE 450 4MATIC AMG Line', price:139000000, disc:13, mbm:4, hike:1400000},
+    {seg:'suv', name:'GLE 450 d 4MATIC Coupe', price:134000000, disc:8, mbm:0, hike:1400000},
+    {seg:'suv', name:'GLE 450 4MATIC Coupe', price:142500000, disc:13, mbm:4, hike:1400000},
+    {seg:'suv', name:'AMG GLE 53 4MATIC+', price:166000000, disc:8, mbm:0, hike:1400000},
+    {seg:'suv', name:'AMG GLE 53 4MATIC+ Coupe', price:170000000, disc:5, mbm:0, hike:1400000},
+
+    // S-Class / GLS / G-Class / Maybach (flagship)
+    {seg:'flagship', name:'S 350 d 4MATIC', price:154000000, disc:10, mbm:0, hike:1400000},
+    {seg:'flagship', name:'S 450 4MATIC SWB', price:162000000, disc:7, mbm:4, hike:1400000},
+    {seg:'flagship', name:'S 450 4MATIC Long', price:193000000, disc:10, mbm:0, hike:1400000},
+    {seg:'flagship', name:'S 500 4MATIC Long', price:215000000, disc:10, mbm:0, hike:1400000},
+    {seg:'flagship', name:'S 580 4MATIC Long', price:260000000, disc:10, mbm:0, hike:1400000},
+    {seg:'flagship', name:'AMG S 63 E Performance', price:299000000, disc:10, mbm:0, hike:1400000},
+    {seg:'flagship', name:'Maybach S 580', price:317000000, disc:9, mbm:0, hike:1400000},
+    {seg:'flagship', name:'Maybach S 680', price:403000000, disc:9, mbm:0, hike:1400000},
+    {seg:'flagship', name:'GLS 450 4MATIC AMG Line', price:154000000, disc:5, mbm:0, hike:1400000},
+    {seg:'flagship', name:'GLS 450 d 4MATIC AMG Line', price:154000000, disc:2, mbm:0, hike:1400000},
+    {seg:'flagship', name:'GLS 580 4MATIC AMG Line', price:193400000, disc:6, mbm:0, hike:1400000},
+    {seg:'flagship', name:'AMG GLS 63 4MATIC+', price:210000000, disc:1, mbm:0, hike:1400000},
+    {seg:'flagship', name:'Maybach GLS 600', price:295000000, disc:5, mbm:0, hike:1400000},
+    {seg:'flagship', name:'Maybach GLS 600 MANUFAKTUR', price:337000000, disc:5, mbm:0, hike:1400000},
+    {seg:'flagship', name:'G 450 d', price:194900000, disc:0, mbm:0, hike:1400000},
+    {seg:'flagship', name:'AMG G 63', price:262600000, disc:0, mbm:0, hike:1400000},
+
+    // CLE / SL / AMG GT (sport)
+    {seg:'sport', name:'CLE 200 Coupe AMG Line', price:76700000, disc:5, mbm:0, hike:1000000},
+    {seg:'sport', name:'CLE 200 Cabriolet AMG Line', price:83100000, disc:4, mbm:0, hike:1000000},
+    {seg:'sport', name:'CLE 450 4MATIC Coupe AMG Line', price:99700000, disc:9, mbm:0, hike:1300000},
+    {seg:'sport', name:'CLE 450 4MATIC Cabriolet AMG Line', price:104000000, disc:6, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG CLE 53 4MATIC+ Coupe', price:109100000, disc:3, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG CLE 53 4MATIC+ Cabriolet', price:115000000, disc:3, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG SL 43', price:160000000, disc:9, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG GT 43 4MATIC+', price:164000000, disc:9, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG GT 55 4MATIC+ Coupe', price:210000000, disc:3, mbm:0, hike:1400000},
+    {seg:'sport', name:'AMG GT 63 S E Performance', price:280000000, disc:4, mbm:0, hike:1400000},
+    {seg:'sport', name:'Maybach SL 680', price:344000000, disc:2, mbm:0, hike:1400000},
+
+    // EV (ev)
+    {seg:'ev', name:'EQA 250', price:70000000, disc:10, mbm:4, hike:0},
+    {seg:'ev', name:'EQA 250 AMG Line', price:75800000, disc:10, mbm:4, hike:0},
+    {seg:'ev', name:'EQB 300 4MATIC Progressive', price:78800000, disc:10, mbm:4, hike:0},
+    {seg:'ev', name:'EQB 300 4MATIC AMG Line', price:84300000, disc:10, mbm:4, hike:0},
+    {seg:'ev', name:'EQE 350+ SUV', price:106000000, disc:10, mbm:0, hike:0},
+    {seg:'ev', name:'EQE 350+', price:110000000, disc:10, mbm:0, hike:0},
+    {seg:'ev', name:'EQE 500 4MATIC SUV', price:141000000, disc:10, mbm:0, hike:200000},
+    {seg:'ev', name:'EQS 450 4MATIC SUV', price:166000000, disc:10, mbm:0, hike:1400000},
+    {seg:'ev', name:'G 580 with EQ Technology', price:216100000, disc:0, mbm:0, hike:1400000},
+    {seg:'ev', name:'Maybach EQS 680 SUV', price:235000000, disc:0, mbm:0, hike:1400000},
+  ];
+
+  function fmt(n){ return n.toLocaleString('ko-KR') + '원'; }
+
+  let priceMode = 'normal'; // 'normal' | 'tax'
+
+  function vehCardHTML(v){
+    const totalDisc = v.disc + v.mbm;
+    const final = Math.floor(v.price * (1 - totalDisc/100) / 10000) * 10000;
+    const taxAdjusted = v.hike > 0 ? final - v.hike : final;
+    const hasDiscount = totalDisc > 0;
+    const shown = priceMode === 'tax' ? taxAdjusted : final;
+    const shownLabel = priceMode === 'tax' ? '개소세 인하 적용가 · 7/1 이전 통관' : '실구매가 · 정상 통관';
+    return `
+      <div class="veh-card ${v.mbm > 0 ? 'mbm' : ''}">
+        ${v.mbm > 0 ? '<span class="veh-badge">MBM 특별할인</span>' : ''}
+        <div class="veh-name">${v.name}</div>
+        ${hasDiscount ? `<div class="veh-msrp">${fmt(v.price)}</div>` : ''}
+        ${hasDiscount ? `
+          <div class="veh-discount">기본 할인 <b>${v.disc}%</b>${v.mbm > 0 ? ` + MBM 특별 <b>${v.mbm}%</b>` : ''}</div>
+          <div class="veh-final">${fmt(shown)}<span>${shownLabel}</span></div>
+        ` : `
+          <div class="veh-final" style="color:var(--silver-bright);">${fmt(v.price)}<span>정가</span></div>
+          <div class="veh-none">별도 프로모션 없음 · 상담 시 조건 확인</div>
+        `}
+      </div>`;
+  }
+
+  function renderVehicles(seg){
+    const grid = document.getElementById('vehGrid');
+    const list = seg === 'all' ? vehicles : vehicles.filter(v => v.seg === seg);
+    grid.innerHTML = list.map(vehCardHTML).join('');
+  }
+
+  function renderMBM(){
+    const grid = document.getElementById('mbmGrid');
+    const list = vehicles.filter(v => v.mbm > 0);
+    grid.innerHTML = list.map(vehCardHTML).join('');
+  }
+
+  function renderAll(){
+    renderMBM();
+    const activeBtn = document.querySelector('.filter-btn.active');
+    renderVehicles(activeBtn ? activeBtn.dataset.seg : 'all');
+  }
+
+  renderAll();
+
+  document.getElementById('filterBar').addEventListener('click', (e) => {
+    if(e.target.classList.contains('filter-btn')){
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      renderVehicles(e.target.dataset.seg);
+    }
+  });
+
+  document.getElementById('priceToggle').addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-btn');
+    if(!btn) return;
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    priceMode = btn.dataset.mode;
+    renderAll();
+  });
+</script>
+
+</body>
+</html>
